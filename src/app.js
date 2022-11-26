@@ -23,5 +23,4 @@ app.get('/ping',(req,res)=>{
 app.use('/api/v1/departamentos',ROUTES.Departments);
 app.use('/api/v1/empleados',ROUTES.Employees);
 
-
 module.exports=app

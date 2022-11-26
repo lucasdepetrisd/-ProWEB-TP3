@@ -27,7 +27,6 @@ GET {{API_DEPARTAMENTOS}}/d00999
 ### Obtener el Administrador del departamento con id d009
 GET {{API_DEPARTAMENTOS}}/d009/manager
 
-
 ### Agregar un departamento
 POST {{API_DEPARTAMENTOS}}
 Content-Type: application/json
@@ -51,3 +50,27 @@ DELETE {{API_DEPARTAMENTOS}}/dinf
 
 ### Obtener departamento con id dinf
 GET {{API_DEPARTAMENTOS}}/dinf
+
+# Variable con la URL completa hacia la API de departamentos
+@API_EMPLEADOS={{BASE_API}}/api/v1/empleados
+
+### Obtener todos los empleados (FUNCIONA PERO NO UTILIZAR. TABLA 10.000>FILAS)
+GET {{API_EMPLEADOS}}
+
+### Obtener empleado por id 100001
+GET {{API_EMPLEADOS}}/100001
+
+### Obtener historial de salarios por id de empleado 100001
+GET {{API_EMPLEADOS}}/100001/salaries
+
+### Obtener el ultimo salario por id de empleado 100001
+GET {{API_EMPLEADOS}}/100001/salaries/last
+
+### Agregar un salario
+POST {{API_EMPLEADOS}}
+Content-Type: application/json
+
+{
+    "emp_no":"100001",
+    "salary":"60750"
+}
