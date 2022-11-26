@@ -26,7 +26,7 @@ const TABLE='employees'
     let conn;
     try {
       conn = await pool.getConnection();
-      const rows = await conn.query(`SELECT * FROM ${TABLE} d WHERE dept_no=?`,[id]);
+      const rows = await conn.query(`SELECT * FROM ${TABLE} d WHERE emp_no=?`,[id]);
       return rows[0];
     } catch (err) {
       return Promise.reject(err);
@@ -47,11 +47,11 @@ const TABLE='employees'
       conn = await pool.getConnection();
       const SQL=`
   SELECT 
-    e.*,
-    dm.from_date AS fecha_desde
-  FROM dept_manager dm
-      INNER JOIN employees e ON (e.emp_no = dm.emp_no)
-  WHERE dm.dept_no = ? AND dm.to_date='9999-01-01'
+    s.*,
+    s.from_date AS fecha_desde
+  FROM employees emp
+      INNER JOIN salaries s ON (s.emp_no = emp.emp_no)
+  WHERE emp.emp_no = ? AND s.to_date<='9999-01-01'
   `;
       const rows = await conn.query(SQL,[empleado.emp_no]);
       return rows[0];

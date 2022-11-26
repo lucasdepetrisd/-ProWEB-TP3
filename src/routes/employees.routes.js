@@ -28,7 +28,7 @@ router.get('/',async (req,res)=>{
     res.status(200).json(emp)
 });
 
-// GET /api/v1/departamentos/:id
+// GET /api/v1/empleados/:id
 router.get('/:id',checkEmpleado,(req,res)=>{
     res.status(200).json(res.locals.empleado);    
 });
@@ -38,3 +38,5 @@ router.get('/:id/salaries',checkEmpleado,async (req,res)=>{
     const salario = await DB.Employees.getActualSalario(res.locals.empleado);
     res.status(200).json(salario)
 });
+
+module.exports=router
