@@ -55,9 +55,15 @@ router.post('/', async (req, res) => {
         res.status(400).send('salary es Requerido!!!')
         return
     }
-    const salario = await DB.Employees.getLastSalary(emp_no);
-    if (salario.salary == salary) {
+    const row = await DB.Employees.getLastSalary(emp_no);
+    if (salary == row.salary) {
         res.status(500).send('ya existe el salario!!!')
+        return
+    }
+    const fecFrom = Date.parse(row.from_date)
+    const today = new Date().setHours(0, 0, 0, 0);
+    if (fecFrom == today) {
+        res.status(500).send('no se puede agregar en la misma fecha!!!')
         return
     }
     const salarioNuevo = { emp_no, salary }

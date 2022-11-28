@@ -68,7 +68,7 @@ module.exports.getAllSalaries = async function (empleado) {
  * @param {Object} empleado 
  * @returns 
  */
- module.exports.getLastSalary = async function (emp_no) {
+module.exports.getLastSalary = async function (emp_no) {
   let conn;
   try {
     conn = await pool.getConnection();
@@ -79,9 +79,10 @@ module.exports.getAllSalaries = async function (empleado) {
       s.to_date
       FROM salaries s
       INNER JOIN employees e USING (emp_no)
-      WHERE emp_no=? AND to_date='9999-01-01'
+      WHERE s.to_date=(
+      SELECT MAX(to_date) FROM salaries WHERE emp_no=${emp_no}) AND emp_no=${emp_no};
   `;
-    const row = await conn.query(SQL, [emp_no]);
+    const row = await conn.query(SQL);
     return row[0];
   } catch (err) {
     return Promise.reject(err);
@@ -95,17 +96,16 @@ module.exports.getAllSalaries = async function (empleado) {
  * @param {Object} salario
  * @returns
  */
- module.exports.add = async function (salario) {
+module.exports.add = async function (salario) {
   let conn;
   try {
     conn = await pool.getConnection();
     const SQLUpdate = `UPDATE salaries SET to_date=CURRENT_DATE() WHERE to_date='9999-01-01' AND emp_no=?`;
-    await conn.query(SQLUpdate, [salario.emp_no]);
-
     const SQLInsert = `INSERT INTO salaries VALUES(?, ?, CURRENT_DATE(), '9999-01-01')`;
     const params = [];
     params[0] = salario.emp_no;
     params[1] = salario.salary;
+    await conn.query(SQLUpdate, [salario.emp_no]);
     const rows = await conn.query(SQLInsert, params);
     return rows;
   } catch (err) {
