@@ -126,3 +126,81 @@ module.exports.update = async function (departamento) {
     if (conn) await conn.release();
   }
 };
+
+/**
+ * Retorna el dpto actual de un empleado por su id y las fechas desde
+ * @param {Object} empleado 
+ * @returns 
+ */
+ module.exports.getLastDepto = async function (emp_no) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const SQL = `
+      SELECT
+      d.dept_no,
+      d.from_date,
+      d.to_date
+      FROM dept_emp d
+      INNER JOIN employees e USING (emp_no)
+      WHERE d.to_date=(
+      SELECT MAX(to_date) FROM dept_emp WHERE emp_no=${emp_no}) AND emp_no=${emp_no};
+  `;
+    const row = await conn.query(SQL);
+    return row[0];
+  } catch (err) {
+    return Promise.reject(err);
+  } finally {
+    if (conn) await conn.release();
+  }
+};
+/**
+ * Retorna el manager actual de un departamento por su id y las fechas desde
+ * @param {Object} departamento 
+ * @returns 
+ */
+ module.exports.getLastEmp = async function (dept_no) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const SQL = `
+      SELECT
+      d.emp_no,
+      d.from_date,
+      d.to_date
+      FROM dept_manager d
+      WHERE d.to_date=(
+      SELECT MAX(to_date) FROM dept_manager WHERE dept_no="${dept_no}") AND dept_no="${dept_no}";
+  `;
+    const row = await conn.query(SQL);
+    return row[0];
+  } catch (err) {
+    return Promise.reject(err);
+  } finally {
+    if (conn) await conn.release();
+  }
+};
+
+/**
+ * modifica el manager de un departamento
+ * @param {Object} departamento
+ * @returns
+ */
+ module.exports.updateManager = async function (departamento) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const SQLUpdate = `UPDATE dept_manager SET to_date=CURRENT_DATE() WHERE to_date='9999-01-01' AND dept_no=?`;
+    const SQLInsert = `INSERT INTO dept_manager VALUES(?, ?, CURRENT_DATE(), '9999-01-01')`;
+    const params = [];
+    params[0] = departamento.emp_no;
+    params[1] = departamento.dept_no;
+    await conn.query(SQLUpdate, [departamento.dept_no]);
+    const rows = await conn.query(SQLInsert, params);
+    return rows;
+  } catch (err) {
+    return Promise.reject(err);
+  } finally {
+    if (conn) await conn.release();
+  }
+};

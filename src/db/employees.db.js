@@ -114,3 +114,29 @@ module.exports.add = async function (salario) {
     if (conn) await conn.release();
   }
 };
+
+
+/**
+ * modifica el dpto donde trabaja un empleado
+ * @param {Object} departamento
+ * @returns
+ */
+module.exports.update = async function (departamento) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const SQLUpdate = `UPDATE dept_emp SET to_date=CURRENT_DATE() WHERE to_date='9999-01-01' AND emp_no=?`;
+    const SQLInsert = `INSERT INTO dept_emp VALUES(?, ?, CURRENT_DATE(), '9999-01-01')`;
+    const params = [];
+    params[0] = departamento.emp_no;
+    params[1] = departamento.depto_no;
+    await conn.query(SQLUpdate, [departamento.emp_no]);
+    const rows = await conn.query(SQLInsert, params);
+    return rows;
+  } catch (err) {
+    return Promise.reject(err);
+  } finally {
+    if (conn) await conn.release();
+  }
+};
+

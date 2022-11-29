@@ -92,4 +92,30 @@ router.delete('/:id', checkDepto, async (req, res) => {
     }
 });
 
+// PUT /api/v1/departamentos/:id/manager
+router.put('/:id/manager',checkDepto, async (req, res) => {
+    const { emp_no } = req.body
+    if (!emp_no) {
+        res.status(400).send('emp_no es Requerido!!!')
+        return
+    }
+    const num_emp = await DB.Employees.getById(emp_no);
+    if (!num_emp) {
+        return res.status(404).send('Empleado no encontrado!!!')
+    }
+    const actualEmp = await DB.Departmens.getLastEmp(res.locals.depto.dept_no);
+    if (emp_no == actualEmp.emp_no) {
+        res.status(500).send('el manager es el mismo!!!')
+        return
+    }
+    const dept_no = res.locals.depto.dept_no;
+    const managerNuevo = { emp_no, dept_no }
+    const isUpdateOk = await DB.Departmens.updateManager(managerNuevo)
+    if (isUpdateOk) {
+        res.status(201).json(managerNuevo)
+    } else {
+        res.status(500).send('Falló al agregar el salario!!!')
+    }
+});
+
 module.exports = router

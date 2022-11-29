@@ -44,7 +44,7 @@ router.get("/:id/salaries/last", checkEmpleado, async (req, res) => {
     res.status(200).json(salario);
 });
 
-// POST /api/v1/empleados/:id/salaries
+// POST /api/v1/empleados
 router.post('/', async (req, res) => {
     const { emp_no, salary } = req.body
     if (!emp_no) {
@@ -70,6 +70,32 @@ router.post('/', async (req, res) => {
     const isAddOk = await DB.Employees.add(salarioNuevo)
     if (isAddOk) {
         res.status(201).json(salarioNuevo)
+    } else {
+        res.status(500).send('Falló al agregar el salario!!!')
+    }
+});
+
+// PUT /api/v1/empleados/:id/departamento
+router.put('/:id/departamento',checkEmpleado, async (req, res) => {
+    const { depto_no } = req.body
+    if (!depto_no) {
+        res.status(400).send('depto_no es Requerido!!!')
+        return
+    }
+    const num_depto = await DB.Departmens.getById(depto_no);
+    if (!num_depto) {
+        return res.status(404).send('Departamento no encontrado!!!')
+    }
+    const actualDepto = await DB.Departmens.getLastDepto(res.locals.empleado.emp_no);
+    if (depto_no == actualDepto.dept_no) {
+        res.status(500).send('el departamento es el mismo!!!')
+        return
+    }
+    const emp_no = res.locals.empleado.emp_no;
+    const deptoNuevo = { emp_no, depto_no }
+    const isUpdateOk = await DB.Employees.update(deptoNuevo)
+    if (isUpdateOk) {
+        res.status(201).json(deptoNuevo)
     } else {
         res.status(500).send('Falló al agregar el salario!!!')
     }
