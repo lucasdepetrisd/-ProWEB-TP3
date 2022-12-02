@@ -2,25 +2,127 @@ require("dotenv").config();
 const app = require("../src/app");
 const request = require("supertest");
 
-describe("Rest API Departamentos", () => {
-  it("GET /api/v1/departamentos", async () => {
-    const response = await request(app).get("/api/v1/departamentos");
+describe("Rest API Empleados", () => {
+  it("GET /api/v1/empleados", async () => {
+    const response = await request(app).get("/api/v1/empleados");
     expect(response).toBeDefined();
     expect(response.statusCode).toBe(200);
-    const deptos = response.body;
-    expect(deptos.length).toBeGreaterThan(0);
+    const empleados = response.body;
+    expect(empleados.length).toBeGreaterThan(0);
   });
 
-  it("GET /api/v1/departamentos/d009", async () => {
-    const response = await request(app).get("/api/v1/departamentos/d009");
+  it("GET /api/v1/empleados/100001/", async () => {
+    const response = await request(app).get("/api/v1/empleados/100001/");
     expect(response).toBeDefined();
     expect(response.statusCode).toBe(200);
-    const depto = response.body;
-    expect(depto).toBeDefined();
-    expect(depto.dept_no).toBeDefined();
-    expect(depto.dept_no).toBe("d009");
-    expect(depto.dept_name).toBeDefined();
-    expect(depto.dept_name).toBe("Customer Service");
+    const empleado = response.body;
+    expect(empleado).toBeDefined();
+    expect(empleado.emp_no).toBeDefined();
+    expect(empleado.emp_no).toBe(100001);
+  });
+
+  it("GET /api/v1/empleados/100001/salaries", async () => {
+    const response = await request(app).get("/api/v1/empleados/100001/salaries");
+    expect(response).toBeDefined();
+    expect(response.statusCode).toBe(200);
+    const salarios = response.body;
+    expect(salarios.length).toBeGreaterThan(1);
+    salarios.forEach(sal => {
+      expect(sal).toBeDefined();
+      expect(sal.emp_no).toBeDefined();
+      expect(sal.emp_no).toBe(100001);
+    });
+  });
+
+  it("GET /api/v1/empleados/100001/salaries/last", async () => {
+    const response = await request(app).get("/api/v1/empleados/100001/salaries/last");
+    expect(response).toBeDefined();
+    expect(response.statusCode).toBe(200);
+    const lastSal = response.body;
+    expect(lastSal).toBeDefined();
+    expect(lastSal.emp_no).toBeDefined();
+    expect(lastSal.emp_no).toBe(100001);
+    expect(lastSal.to_date).toBeDefined();
+    expect(lastSal.to_date).toBe("9999-01-01T03:00:00.000Z");
+  });
+
+  /*--------------------------------------------*/
+  /**
+   * Pruebas de errores en datos de entrada
+   */
+
+  it("GET /api/v1/empleados/1", async () => {
+    const response = await request(app).get("/api/v1/empleados/1");
+    expect(response).toBeDefined();
+    expect(response.statusCode).toBe(404);
+    expect(response.text).toBe("Empleado no encontrado!!!");
+  });
+
+  it("GET /api/v1/empleados/1/salaries", async () => {
+    const response = await request(app).get("/api/v1/empleados/1/salaries");
+    expect(response).toBeDefined();
+    expect(response.statusCode).toBe(404);
+    expect(response.text).toBe("Empleado no encontrado!!!");
+  });
+
+  it("GET /api/v1/empleados/1/salaries/last", async () => {
+    const response = await request(app).get("/api/v1/empleados/1/salaries/last");
+    expect(response).toBeDefined();
+    expect(response.statusCode).toBe(404);
+    expect(response.text).toBe("Empleado no encontrado!!!");
+  });
+
+  /*--------------------------------------------*/
+
+  it("Verificar que agrega con POST /api/v1/empleados", async () => {
+    const salarioNuevo = {
+      emp_no: 100001,
+      salary: 96000
+    }
+
+    const response = await request(app)
+      .post("/api/v1/empleados")
+      .send(salarioNuevo);
+    expect(response).toBeDefined();
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toStrictEqual(salarioNuevo);
+
+    //verificar que un objeto obtenido de la api coincide con el agregado
+    const responseGET = await request(app).get("/api/v1/empleados/100001/salaries/last");
+    expect(responseGET).toBeDefined();
+    expect(responseGET.statusCode).toBe(200);
+    expect(responseGET.body.emp_no).toStrictEqual(salarioNuevo.emp_no);
+    expect(responseGET.body.salary).toStrictEqual(salarioNuevo.salary);
+  });
+
+  
+  it("Verificación después de ejecutar POST /api/v1/empleados", async () => {
+    const salarioNuevo = {
+      emp_no: 100002,
+      salary: 55000
+    }
+
+    const response = await request(app)
+      .post("/api/v1/empleados")
+      .send(salarioNuevo);
+    expect(response).toBeDefined();
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toStrictEqual(salarioNuevo);
+
+    //verificar que un objeto obtenido de la api coincide con el agregado
+    const responseGET = await request(app).get("/api/v1/empleados/100002/salaries/last");
+    expect(responseGET).toBeDefined();
+    expect(responseGET.statusCode).toBe(200);
+    expect(responseGET.body.emp_no).toStrictEqual(salarioNuevo.emp_no);
+    expect(responseGET.body.salary).toStrictEqual(salarioNuevo.salary);
+
+    //const today = new Date().setHours(0, 0, 0, 0);
+    const salaries = await request(app).get("/api/v1/empleados/100002/salaries");
+    const antSal = salaries.body[salaries.body.length-2];
+    const ultSal = salaries.body[salaries.body.length-1];
+    const today = new Date().setHours(0, 0, 0, 0);
+    expect(Date.parse(antSal.to_date)).toBe(today);
+    expect(Date.parse(ultSal.from_date)).toBe(today);
   });
 
   it("GET /api/v1/departamentos/d009/manager", async () => {

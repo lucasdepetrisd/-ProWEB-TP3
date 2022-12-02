@@ -46,6 +46,7 @@ module.exports.getAllSalaries = async function (empleado) {
     conn = await pool.getConnection();
     const SQL = `
       SELECT
+      s.emp_no,
       s.salary,
       s.from_date,
       s.to_date
@@ -74,6 +75,7 @@ module.exports.getLastSalary = async function (emp_no) {
     conn = await pool.getConnection();
     const SQL = `
       SELECT
+      e.emp_no,
       s.salary,
       s.from_date,
       s.to_date
@@ -139,4 +141,3 @@ module.exports.update = async function (departamento) {
     if (conn) await conn.release();
   }
 };
-
