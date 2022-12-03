@@ -141,3 +141,60 @@ describe("Rest API Departamentos", () => {
     expect(responseDelete.statusCode).toBe(204);
   });
 });
+
+
+/*--------------------------------------------*/
+
+
+it("Verificar que modifica con PUT /api/v1/departamentos/d002/manager", async () => {
+  const manNuevo = { emp_no: 100001 };
+
+  // Verificamos que el empleado exista
+  const resEmp = await request(app).get("/api/v1/empleados/100001/");
+  expect(resEmp).toBeDefined();
+  expect(resEmp.statusCode).toBe(200);
+  const empleado = resEmp.body;
+  expect(empleado).toBeDefined();
+  expect(empleado.emp_no).toBeDefined();
+  expect(empleado.emp_no).toBe(100001);
+
+  // Verificamos que el departamento destino exista
+  const resDep = await request(app).get("/api/v1/departamentos/d002");
+  expect(resDep).toBeDefined();
+  expect(resDep.statusCode).toBe(200);
+  const depar = resDep.body;
+  expect(depar).toBeDefined();
+  expect(depar.dept_no).toBeDefined();
+  expect(depar.dept_no).toBe("d002");
+  expect(depar.dept_name).toBeDefined();
+  expect(depar.dept_name).toBe("Finance");
+
+  // Verificamos que el departamento destino sea distinto al departamento actual
+  const resManAct = await request(app).get("/api/v1/departamentos/d002/manager/last");
+  expect(resManAct).toBeDefined();
+  expect(resManAct.statusCode).toBe(200);
+  const manAct = resManAct.body;
+  expect(manAct).toBeDefined();
+  expect(manAct.emp_no).toBeDefined();
+  expect(manAct.emp_no).not.toBe(manNuevo.emp_no);
+
+  //Ahora modificamos con PUT
+  const responseUpdate = await request(app)
+    .put("/api/v1/departamentos/d002/manager")
+    .send(manNuevo); //enviamos la copia
+  expect(responseUpdate).toBeDefined();
+  expect(responseUpdate.statusCode).toBe(201);
+  expect(responseUpdate.body.emp_no).toStrictEqual(manNuevo.emp_no); //verificamos con la copia para verificar
+
+  const registro = await request(app).get("/api/v1/departamentos/d002/manager/all");
+  const antMan = registro.body[registro.body.length-2];
+  const ultMan = registro.body[registro.body.length-1];
+  const today = new Date().setHours(0, 0, 0, 0);
+  expect(Date.parse(antMan.to_date)).toBe(today);
+  expect(Date.parse(ultMan.from_date)).toBe(today);
+  expect(ultMan.to_date).toBe("9999-01-01T03:00:00.000Z");
+  expect(ultMan.emp_no).toBe(manNuevo.emp_no);
+  
+});
+
+/*--------------------------------------------*/

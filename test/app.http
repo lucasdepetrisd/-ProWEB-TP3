@@ -51,6 +51,14 @@ DELETE {{API_DEPARTAMENTOS}}/dinf
 ### Obtener departamento con id dinf
 GET {{API_DEPARTAMENTOS}}/dinf
 
+### Modificar Jefe de un Departamento
+PUT {{API_DEPARTAMENTOS}}/100001/manager
+Content-Type: application/json
+
+{
+    "dept_no":"d005"
+}
+
 # Variable con la URL completa hacia la API de departamentos
 @API_EMPLEADOS={{BASE_API}}/api/v1/empleados
 
@@ -75,3 +83,10 @@ Content-Type: application/json
     "salary":"96000"
 }
 
+### Mover un empleado del Departamento actual donde trabaja a otro Departamento
+PUT {{API_EMPLEADOS}}/100001/departamento
+Content-Type: application/json
+
+{
+    "dept_no":"d007"
+}

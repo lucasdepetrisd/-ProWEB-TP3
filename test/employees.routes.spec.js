@@ -125,6 +125,63 @@ describe("Rest API Empleados", () => {
     expect(Date.parse(ultSal.from_date)).toBe(today);
   });
 
+  
+  /*--------------------------------------------*/
+
+
+  it("Verificar que modifica con PUT /api/v1/empleados/100001/departamento", async () => {
+    const deptoNuevo = { depto_no: "d009" };
+
+    // Verificamos que el empleado exista
+    const resEmp = await request(app).get("/api/v1/empleados/100001/");
+    expect(resEmp).toBeDefined();
+    expect(resEmp.statusCode).toBe(200);
+    const empleado = resEmp.body;
+    expect(empleado).toBeDefined();
+    expect(empleado.emp_no).toBeDefined();
+    expect(empleado.emp_no).toBe(100001);
+
+    // Verificamos que el departamento destino exista
+    const resDep = await request(app).get("/api/v1/departamentos/d009");
+    expect(resDep).toBeDefined();
+    expect(resDep.statusCode).toBe(200);
+    const depar = resDep.body;
+    expect(depar).toBeDefined();
+    expect(depar.dept_no).toBeDefined();
+    expect(depar.dept_no).toBe("d009");
+    expect(depar.dept_name).toBeDefined();
+    expect(depar.dept_name).toBe("Customer Service");
+
+    // Verificamos que el departamento destino sea distinto al departamento actual
+    const resDepAct = await request(app).get("/api/v1/empleados/100001/departamento/last");
+    expect(resDepAct).toBeDefined();
+    expect(resDepAct.statusCode).toBe(200);
+    const deparAct = resDepAct.body;
+    expect(deparAct).toBeDefined();
+    expect(deparAct.dept_no).toBeDefined();
+    expect(deparAct.dept_no).not.toMatch(deptoNuevo.depto_no);
+
+    //Ahora modificamos con PUT
+    const responseUpdate = await request(app)
+      .put("/api/v1/empleados/100001/departamento")
+      .send(deptoNuevo); //enviamos la copia
+    expect(responseUpdate).toBeDefined();
+    expect(responseUpdate.statusCode).toBe(201);
+    expect(responseUpdate.body.depto_no).toStrictEqual(deptoNuevo.depto_no); //verificamos con la copia para verificar
+
+    const registro = await request(app).get("/api/v1/empleados/100001/departamento");
+    const antDpto = registro.body[registro.body.length-2];
+    const ultDpto = registro.body[registro.body.length-1];
+    const today = new Date().setHours(0, 0, 0, 0);
+    expect(Date.parse(antDpto.to_date)).toBe(today);
+    expect(Date.parse(ultDpto.from_date)).toBe(today);
+    expect(ultDpto.to_date).toBe("9999-01-01T03:00:00.000Z");
+    expect(ultDpto.dept_no).toBe(deptoNuevo.depto_no);
+    
+  });
+  
+  /*--------------------------------------------*/
+
   it("GET /api/v1/departamentos/d009/manager", async () => {
     const response = await request(app).get("/api/v1/departamentos/d009/manager");
     expect(response).toBeDefined();

@@ -75,6 +75,18 @@ router.post('/', async (req, res) => {
     }
 });
 
+// GET /api/v1/empleados/:id/departamento/last
+router.get("/:id/departamento/last", checkEmpleado, async (req, res) => {
+    const actualDepto = await DB.Departmens.getLastDepto(res.locals.empleado.emp_no);
+    res.status(200).json(actualDepto);
+});
+
+// GET /api/v1/empleados/:id/departamento
+router.get('/:id/departamento', checkEmpleado, async (req, res) => {
+    const deptos = await DB.Employees.getAllDptos(res.locals.empleado);
+    res.status(200).json(deptos)
+});
+
 // PUT /api/v1/empleados/:id/departamento
 router.put('/:id/departamento',checkEmpleado, async (req, res) => {
     const { depto_no } = req.body

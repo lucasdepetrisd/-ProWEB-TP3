@@ -92,6 +92,18 @@ router.delete('/:id', checkDepto, async (req, res) => {
     }
 });
 
+// GET /api/v1/departamentos/:id/manager/last
+router.get("/:id/manager/last", checkDepto, async (req, res) => {
+    const getActualManager = await DB.Departmens.getLastEmp(res.locals.depto.dept_no);
+    res.status(200).json(getActualManager);
+});
+
+// GET /api/v1/departamentos/:id/manager
+router.get('/:id/manager/all', checkDepto, async (req, res) => {
+    const managers = await DB.Departmens.getAllMan(res.locals.depto);
+    res.status(200).json(managers)
+});
+
 // PUT /api/v1/departamentos/:id/manager
 router.put('/:id/manager',checkDepto, async (req, res) => {
     const { emp_no } = req.body
