@@ -195,6 +195,12 @@ it("Verificar que modifica con PUT /api/v1/departamentos/d002/manager", async ()
   expect(ultMan.to_date).toBe("9999-01-01T03:00:00.000Z");
   expect(ultMan.emp_no).toBe(manNuevo.emp_no);
   
+  //Vuelvo a dejar el manager que estaba
+  const responseDelete = await request(app)
+  .delete("/api/v1/departamentos/d002/manager/last")
+  .send();
+  expect(responseDelete).toBeDefined();
+  expect(responseDelete.statusCode).toBe(204);
 });
 
 /*--------------------------------------------*/

@@ -130,4 +130,10 @@ router.put('/:id/manager',checkDepto, async (req, res) => {
     }
 });
 
+// DELETE /api/v1/departamentos/:id/manager/last
+router.delete("/:id/manager/last", checkDepto, async (req, res) => {
+    const isDeleteOk = await DB.Departmens.deleteReg(res.locals.depto.dept_no);
+    res.status(204).json(isDeleteOk);
+});
+
 module.exports = router

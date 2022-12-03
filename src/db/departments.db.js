@@ -236,3 +236,33 @@ module.exports.update = async function (departamento) {
     if (conn) await conn.release();
   }
 };
+
+/**
+ * Eliminar un registro de los managers de un dpto
+ * @param {Object} empleado
+ * @returns
+ */
+ module.exports.deleteReg = async function (dept_no) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const SQLDelete = 
+    `DELETE FROM dept_manager
+      WHERE to_date=(
+      SELECT MAX(to_date) FROM dept_manager WHERE dept_no="${dept_no}")
+      AND dept_no="${dept_no}";`;
+    
+    const SQLUpdate = 
+    `UPDATE dept_manager SET to_date='9999-01-01' 
+    WHERE to_date=(SELECT MAX(to_date) FROM dept_manager WHERE dept_no="${dept_no}") 
+    AND dept_no="${dept_no}";`;
+    
+    const rows = await conn.query(SQLDelete);
+    await conn.query(SQLUpdate);
+    return rows;
+  } catch (err) {
+    return Promise.reject(err);
+  } finally {
+    if (conn) await conn.release();
+  }
+};
