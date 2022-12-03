@@ -1,5 +1,6 @@
 const pool = require("./connection.db");
 const TABLE = 'employees'
+const TABLESAL = 'salaries'
 
 /**
  * Retorna todos los empleados
@@ -134,6 +135,36 @@ module.exports.update = async function (departamento) {
     params[1] = departamento.depto_no;
     await conn.query(SQLUpdate, [departamento.emp_no]);
     const rows = await conn.query(SQLInsert, params);
+    return rows;
+  } catch (err) {
+    return Promise.reject(err);
+  } finally {
+    if (conn) await conn.release();
+  }
+};
+
+/**
+ * Eliminar un salario
+ * @param {Object} empleado
+ * @returns
+ */
+ module.exports.delete = async function (emp_no) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const SQLDelete = 
+    `DELETE FROM salaries
+      WHERE to_date=(
+      SELECT MAX(to_date) FROM salaries WHERE emp_no=${emp_no})
+      AND emp_no=${emp_no};`;
+    
+    const SQLUpdate = 
+    `UPDATE salaries SET to_date='9999-01-01' 
+    WHERE to_date=(SELECT MAX(to_date) FROM salaries WHERE emp_no=${emp_no}) 
+    AND emp_no=${emp_no};`;
+    
+    const rows = await conn.query(SQLDelete);
+    await conn.query(SQLUpdate);
     return rows;
   } catch (err) {
     return Promise.reject(err);

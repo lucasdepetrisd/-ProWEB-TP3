@@ -75,3 +75,5 @@ Content-Type: application/json
     "salary":"96000"
 }
 
+### Borrar último salario de empleado 100001
+DELETE {{API_EMPLEADOS}}/100003/salaries/last
