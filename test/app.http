@@ -91,4 +91,4 @@ Content-Type: application/json
     "dept_no":"d007"
 }
 ### Borrar último salario de empleado 100001
-DELETE {{API_EMPLEADOS}}/100003/salaries/last
+DELETE {{API_EMPLEADOS}}/100001/salaries/last
