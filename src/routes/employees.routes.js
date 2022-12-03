@@ -113,4 +113,15 @@ router.put('/:id/departamento',checkEmpleado, async (req, res) => {
     }
 });
 
+// DELETE /api/v1/empleados/:id/salaries/last
+router.delete('/:id/salaries/last', checkEmpleado, async (req, res) => {
+    const { empleado } = res.locals;
+    const isDeleteOk = await DB.Employees.delete(empleado.emp_no)
+    if (isDeleteOk) {
+        res.status(204).send()
+    } else {
+        res.status(500).send('Falló al eliminar el último salario!!!')
+    }
+});
+
 module.exports = router;
