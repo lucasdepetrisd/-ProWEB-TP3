@@ -178,6 +178,12 @@ describe("Rest API Empleados", () => {
     expect(ultDpto.to_date).toBe("9999-01-01T03:00:00.000Z");
     expect(ultDpto.dept_no).toBe(deptoNuevo.depto_no);
     
+    //Vuelvo a dejar el manager que estaba
+    const responseDelete = await request(app)
+      .delete("/api/v1/empleados/100001/departamento/last")
+      .send();
+    expect(responseDelete).toBeDefined();
+    expect(responseDelete.statusCode).toBe(204);
   });
   
   /*--------------------------------------------*/

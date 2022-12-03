@@ -200,3 +200,33 @@ module.exports.update = async function (departamento) {
     if (conn) await conn.release();
   }
 };
+
+/**
+ * Eliminar un registro de los departamentos donde trabajo un empleado
+ * @param {Object} empleado
+ * @returns
+ */
+ module.exports.deleteReg = async function (emp_no) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const SQLDelete = 
+    `DELETE FROM dept_emp
+      WHERE to_date=(
+      SELECT MAX(to_date) FROM dept_emp WHERE emp_no=${emp_no})
+      AND emp_no=${emp_no};`;
+    
+    const SQLUpdate = 
+    `UPDATE dept_emp SET to_date='9999-01-01' 
+    WHERE to_date=(SELECT MAX(to_date) FROM dept_emp WHERE emp_no=${emp_no}) 
+    AND emp_no=${emp_no};`;
+    
+    const rows = await conn.query(SQLDelete);
+    await conn.query(SQLUpdate);
+    return rows;
+  } catch (err) {
+    return Promise.reject(err);
+  } finally {
+    if (conn) await conn.release();
+  }
+};
