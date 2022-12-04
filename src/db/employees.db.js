@@ -148,7 +148,7 @@ module.exports.add = async function (salario) {
 };
 
 /**
- * modifica el dpto donde trabaja un empleado
+ * Modifica el dpto donde trabaja un empleado
  * @param {Object} departamento
  * @returns
  */

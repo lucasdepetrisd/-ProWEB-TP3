@@ -73,7 +73,9 @@ describe("Rest API Empleados", () => {
   });
 
   /*--------------------------------------------*/
-
+  /**
+   * Pruebas inserción y eliminación de último salario
+   */
   it("Verificar que agrega con POST /api/v1/empleados", async () => {
     const salarioNuevo = {
       emp_no: 100001,
@@ -136,7 +138,9 @@ describe("Rest API Empleados", () => {
 
   
   /*--------------------------------------------*/
-
+  /**
+   * Pruebas gestión de empleados en departamentos
+   */
 
   it("Verificar que modifica con PUT /api/v1/empleados/100001/departamento", async () => {
     const deptoNuevo = { depto_no: "d009" };

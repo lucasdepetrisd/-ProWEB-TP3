@@ -12,7 +12,7 @@ GET {{BASE_API}}/
 ### Obtener ping
 GET {{BASE_API}}/ping
 
-# Variable con la URL completa hacia la API de departamentos
+### Variable con la URL completa hacia la API de departamentos
 @API_DEPARTAMENTOS={{BASE_API}}/api/v1/departamentos
 
 ### Obtener todos los departamentos
@@ -56,10 +56,10 @@ PUT {{API_DEPARTAMENTOS}}/100001/manager
 Content-Type: application/json
 
 {
-    "dept_no":"d005"
+    "emp_no":100001
 }
 
-# Variable con la URL completa hacia la API de departamentos
+### Variable con la URL completa hacia la API de departamentos
 @API_EMPLEADOS={{BASE_API}}/api/v1/empleados
 
 ### Obtener todos los empleados (FUNCIONA PERO NO UTILIZAR. TABLA 10.000>FILAS)
@@ -88,7 +88,8 @@ PUT {{API_EMPLEADOS}}/100001/departamento
 Content-Type: application/json
 
 {
-    "dept_no":"d007"
+    "depto_no":"d007"
 }
+
 ### Borrar último salario de empleado 100001
 DELETE {{API_EMPLEADOS}}/100001/salaries/last
